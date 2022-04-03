@@ -1,4 +1,5 @@
-const { create } = require("tar");
+const { v4: uuidv4 } = require('uuid');
+
 const HttpError = require("../models/http-error");
 
 const DUMMY_PLACES = [
@@ -46,10 +47,23 @@ const getPlaceByUserId = (req, res, next) => {
   res.json({ place: place });
 };
 
-// const createPlace = (req, res, next) => {
+const createPlace = (req, res, next) => {
+  //const title = req.body.title
+   const { title, description, coordinates, address, creator } = req.body;
+   const createdPlace = {
+     id: uuidv4(),
+     title,
+     description,
+     location: coordinates,
+     address,
+     creator
+   };
 
-// };
+   DUMMY_PLACES.push(createdPlace);
+
+   res.status(201).json({place: createdPlace});
+};
 
 exports.getPlaceById = getPlaceById;
 exports.getPlaceByUserId = getPlaceByUserId;
-//exports.createPlace = createPlace;
+exports.createPlace = createPlace;
