@@ -2,7 +2,10 @@ const axios = require("axios");
 
 const HttpError = require("../models/http-error");
 
-const API_KEY = "AIzaSyC_9CPUcbzgEBI8UE4rhA3XrXYaXpU1hrM";
+require('dotenv').config()
+
+
+const API_KEY = process.env.API_KEY;
 
 async function getCoordsForAddress(address) {
   // return {

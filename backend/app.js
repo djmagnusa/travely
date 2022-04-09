@@ -6,6 +6,10 @@ const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
 
+require('dotenv').config()
+
+const DB = process.env.DATABASE;
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -28,7 +32,7 @@ app.use((error, req, res, next) => { //
 });
 
 mongoose
-    .connect('mongodb+srv://pratush:iamthebest@cluster0.t6v5z.mongodb.net/travely?retryWrites=true&w=majority')
+    .connect(DB)
     .then(() => {
         app.listen(5000);         
     })
