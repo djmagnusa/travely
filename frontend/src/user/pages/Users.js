@@ -41,7 +41,7 @@ const Users = () => {
 
             setIsLoading(false);  
         };
-        sendRequest();
+        sendRequest(); //new function,  as making useEffect async is a bad code
     }, [])
 
     const errorHandler = () => {
