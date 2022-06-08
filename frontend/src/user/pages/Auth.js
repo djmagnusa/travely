@@ -5,21 +5,20 @@ import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
-
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
   VALIDATOR_REQUIRE,
 } from "../../shared/util/validators";
 import { useForm } from "../../shared/hooks/form-hook";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import "./Auth.css";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -40,7 +39,7 @@ const Auth = () => {
       setFormData(
         {
           ...formState.inputs,
-          name: undefined,
+          name: undefined
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -62,89 +61,80 @@ const Auth = () => {
   const authSubmitHandler = async (event) => {
     event.preventDefault();
     //console.log(formState.inputs);
-    setIsLoading(true);
-   
+
     if (isLoginMode) {
-        try {         
-          const response = await fetch("http://localhost:5000/api/users/login", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                  email: formState.inputs.email.value,
-                  password: formState.inputs.password.value,
-              }),
-          });
-
-          const responseData = await response.json();
-          if(!response.ok) {
-              throw new Error(responseData.message);
+      try {
+        await sendRequest(
+          "http://localhost:5000/api/users/login",
+          "POST",
+          JSON.stringify({
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+          {
+            "Content-Type": "application/json",
           }
-
-          //console.log(responseData);
-          setIsLoading(false);
-          auth.login(); //only run when getting response is done
+        );
+        auth.login(); //only run when getting response is done
       } catch (err) {
-          console.log(err);
-          setIsLoading(false);
-          setError(err.message || 'Something went wrong, please try again.');
+        //Empty cathc blocks as every thin happens in custom hook
       }
-    
+      //console.log(responseData);
     } else {
-      try {         
-            const response = await fetch("http://localhost:5000/api/users/signup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                    body: JSON.stringify({
-                    name: formState.inputs.name.value,
-                    email: formState.inputs.email.value,
-                    password: formState.inputs.password.value,
-                }),
-            });
+      try {
+        await sendRequest(
+          "http://localhost:5000/api/users/signup",
+          "POST",
+          JSON.stringify({
+            name: formState.inputs.name.value,
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+          {
+            "Content-Type": "application/json",
+          }
+        );
 
-            const responseData = await response.json();
-            if(!response.ok) {
-                throw new Error(responseData.message);
-            }
+        // const responseData = await response.json();
+        // if (!response.ok) {
+        //   throw new Error(responseData.message);
+        // }
 
-            //console.log(responseData);
-            setIsLoading(false);
-            auth.login(); //only run when getting response is done
-        } catch (err) {
-            console.log(err);
-            setIsLoading(false);
-            setError(err.message || 'Something went wrong, please try again.');
-        }
+        //console.log(responseData);
+        // setIsLoading(false);
+        auth.login(); //only run when getting response is done
+      } catch (err) {
+        // console.log(err);
+        // setIsLoading(false);
+        // setError(err.message || "Something went wrong, please try again.");
+      }
     }
   };
 
-  const errorHandler = () => {
-      setError(null);
-  };
+  // const errorHandler = () => {
+  //   setError(null);
+  // };
 
   return (
     <React.Fragment>
-        <ErrorModal error={error} onClear={errorHandler} />
-        <Card className="authentication">
-        {isLoading && <LoadingSpinner asOverlay/>}
+      <ErrorModal error={error} onClear={clearError} />
+      <Card className="authentication">
+        {isLoading && <LoadingSpinner asOverlay />}
         <h2>Login Required</h2>
         <hr />
         <form onSubmit={authSubmitHandler}>
-            {!isLoginMode && (
+          {!isLoginMode && (
             <Input
-                element="input"
-                id="name"
-                type="text"
-                label="Your name"
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText="Please enter a name."
-                onInput={inputHandler}
+              element="input"
+              id="name"
+              type="text"
+              label="Your name"
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please enter a name."
+              onInput={inputHandler}
             />
-            )}
-            <Input
+          )}
+          <Input
             element="input"
             id="email"
             type="email"
@@ -152,8 +142,8 @@ const Auth = () => {
             validators={[VALIDATOR_EMAIL()]}
             errorText="Please enter a valid email address."
             onInput={inputHandler}
-            />
-            <Input
+          />
+          <Input
             element="input"
             id="password"
             type="password"
@@ -161,15 +151,15 @@ const Auth = () => {
             validators={[VALIDATOR_MINLENGTH(5)]}
             errorText="Please enter a valid password, at least 5 characters."
             onInput={inputHandler}
-            />
-            <Button type="submit" disabled={!formState.isValid}>
+          />
+          <Button type="submit" disabled={!formState.isValid}>
             {isLoginMode ? "LOGIN" : "SIGNUP"}
-            </Button>
+          </Button>
         </form>
         <Button inverse onClick={switchModeHandler}>
-            SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
+          SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
         </Button>
-        </Card>
+      </Card>
     </React.Fragment>
   );
 };
