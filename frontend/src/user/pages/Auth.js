@@ -64,7 +64,7 @@ const Auth = () => {
 
     if (isLoginMode) {
       try {
-        await sendRequest(
+        const responseData = await sendRequest(
           "http://localhost:5000/api/users/login",
           "POST",
           JSON.stringify({
@@ -75,14 +75,14 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(); //only run when getting response is done
+        auth.login(responseData.user.id); //only run when getting response is done
       } catch (err) {
         //Empty cathc blocks as every thin happens in custom hook
       }
       //console.log(responseData);
     } else {
       try {
-        await sendRequest(
+        const responseData = await sendRequest(
           "http://localhost:5000/api/users/signup",
           "POST",
           JSON.stringify({
@@ -102,7 +102,7 @@ const Auth = () => {
 
         //console.log(responseData);
         // setIsLoading(false);
-        auth.login(); //only run when getting response is done
+        auth.login(responseData.user.id); //only run when getting response is done
       } catch (err) {
         // console.log(err);
         // setIsLoading(false);
