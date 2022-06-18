@@ -51,7 +51,11 @@ const UserPlaces = () => {
     fetchPlaces();
   }, [sendRequest, userId]);
 
-  const placeDeletedHandler = () => {};
+  const placeDeletedHandler = (deletedPlaceId) => {
+    setLoadedPlaces((prevPlaces) =>
+      prevPlaces.filter((place) => place.id !== deletedPlaceId)
+    );
+  };
 
   //const loadedPlaces = DUMMY_PLACES.filter(place => place.creator === userId );
   return (
