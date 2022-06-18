@@ -51,6 +51,8 @@ const UserPlaces = () => {
     fetchPlaces();
   }, [sendRequest, userId]);
 
+  const placeDeletedHandler = () => {};
+
   //const loadedPlaces = DUMMY_PLACES.filter(place => place.creator === userId );
   return (
     <React.Fragment>
@@ -60,7 +62,9 @@ const UserPlaces = () => {
           <LoadingSpinner />
         </div>
       )}
-      {!isLoading && loadedPlaces && <PlaceList items={loadedPlaces} />}
+      {!isLoading && loadedPlaces && (
+        <PlaceList items={loadedPlaces} onDeletePlace={placeDeletedHandler} />
+      )}
     </React.Fragment>
   );
 };
